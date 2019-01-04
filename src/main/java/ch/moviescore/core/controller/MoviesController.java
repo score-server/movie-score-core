@@ -1,6 +1,5 @@
 package ch.moviescore.core.controller;
 
-import ch.moviescore.core.data.movie.Movie;
 import ch.moviescore.core.model.MovieListModel;
 import ch.moviescore.core.service.PageService;
 import ch.moviescore.core.service.SearchService;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 @RequestMapping("movies")

@@ -3,16 +3,17 @@ package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.activitylog.ActivityLogDao;
 import ch.moviescore.core.data.importlog.ImportLogDao;
-import ch.moviescore.core.data.request.RequestDao;
-import ch.moviescore.core.service.filehandler.SettingsService;
+import ch.moviescore.core.model.ControlCenterModel;
 import ch.moviescore.core.service.auth.UserAuthService;
 import ch.moviescore.core.service.filehandler.FileHandler;
-import org.springframework.stereotype.Controller;
+import ch.moviescore.core.service.filehandler.SettingsService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,62 +22,50 @@ import javax.servlet.http.HttpServletRequest;
  * @project movie-db
  */
 
-@Controller
-@RequestMapping("settings")
+@RestController
+@RequestMapping("control")
 public class ControlCenterSettings {
 
     private ImportLogDao importLogDao;
     private ActivityLogDao activityLogDao;
-    private RequestDao requestDao;
 
     private SettingsService settingsService;
     private UserAuthService userAuthService;
 
     public ControlCenterSettings(SettingsService settingsService, UserAuthService userAuthService,
-                                 ImportLogDao importLogDao, ActivityLogDao activityLogDao, RequestDao requestDao) {
+                                 ImportLogDao importLogDao, ActivityLogDao activityLogDao) {
         this.settingsService = settingsService;
         this.userAuthService = userAuthService;
         this.importLogDao = importLogDao;
         this.activityLogDao = activityLogDao;
-        this.requestDao = requestDao;
     }
 
-    @GetMapping
-    private String getControlCenter(Model model, HttpServletRequest request) {
+    @GetMapping(produces = "application/json")
+    private @ResponseBody
+    ControlCenterModel getControlCenter(Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
 
-            model.addAttribute("moviePath", settingsService.getKey("moviePath"));
-            model.addAttribute("seriePath", settingsService.getKey("seriePath"));
-            model.addAttribute("importProgress", settingsService.getKey("importProgress"));
-            model.addAttribute("importLogs", importLogDao.getAll());
-            model.addAttribute("activityLogs", activityLogDao.getAll());
-            model.addAttribute("requests", requestDao.getAll());
-            try {
-                model.addAttribute("running", settingsService.getKey("import").equals("1"));
-            } catch (NullPointerException e) {
-                settingsService.setValue("import", "0");
-                model.addAttribute("running", settingsService.getKey("import").equals("1"));
-            }
+            ControlCenterModel controlCenterModel = new ControlCenterModel();
+            controlCenterModel.setMoviePath(settingsService.getKey("moviePath"));
+            controlCenterModel.setSeriePath(settingsService.getKey("seriePath"));
+            controlCenterModel.setProgress(settingsService.getKey("importProgress"));
+            controlCenterModel.setImportActive(settingsService.getKey("import").equals("1"));
+            controlCenterModel.setRestartTime(settingsService.getKey("restart"));
 
-            try {
-                model.addAttribute("restart", settingsService.getKey("restart"));
-            } catch (NullPointerException e) {
+//            model.addAttribute("importLogs", importLogDao.getAll());
+//            model.addAttribute("activityLogs", activityLogDao.getAll());
+//            model.addAttribute("requests", requestDao.getAll());
 
-            }
-
-            model.addAttribute("page", "controlCenter");
-            return "template";
+            return controlCenterModel;
         } else {
-            return "redirect:/login?redirect=/settings";
+            return null;
         }
     }
 
     @GetMapping("error")
     public String getErrorLogs(Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
-            model.addAttribute("error", new FileHandler("log.log").read());
-            model.addAttribute("page", "errorLog");
-            return "template";
+            return new FileHandler("log.log").read();
         } else {
             return "redirect:/login?redirect=/settings/error";
         }
