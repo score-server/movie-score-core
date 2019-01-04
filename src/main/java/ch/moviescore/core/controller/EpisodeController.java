@@ -44,12 +44,12 @@ public class EpisodeController {
     }
 
     @GetMapping(value = "{episodeId}", produces = "application/json")
-    public EpisodeModel getOneEpisode(@PathVariable("episodeId") Long episodeId, Model model, HttpServletRequest request) {
+    public EpisodeModel getOneEpisode(@PathVariable("episodeId") String episodeId, Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
 
             User user = userAuthService.getUser(request).getUser();
-            Episode episode = episodeDao.getById(episodeId);
+            Episode episode = episodeDao.getById(Long.valueOf(episodeId));
 
             EpisodeModel episodeModel = new EpisodeModel();
             episodeModel.setEpisode(episode);
