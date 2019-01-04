@@ -1,6 +1,6 @@
 package ch.moviescore.core.controller;
 
-import ch.moviescore.core.model.MovieListModel;
+import ch.moviescore.core.model.api.MovieListModel;
 import ch.moviescore.core.service.PageService;
 import ch.moviescore.core.service.SearchService;
 import ch.moviescore.core.service.auth.UserAuthService;

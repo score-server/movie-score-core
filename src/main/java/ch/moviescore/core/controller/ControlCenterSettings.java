@@ -3,7 +3,7 @@ package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.activitylog.ActivityLogDao;
 import ch.moviescore.core.data.importlog.ImportLogDao;
-import ch.moviescore.core.model.ControlCenterModel;
+import ch.moviescore.core.model.api.ControlCenterModel;
 import ch.moviescore.core.service.auth.UserAuthService;
 import ch.moviescore.core.service.filehandler.FileHandler;
 import ch.moviescore.core.service.filehandler.SettingsService;

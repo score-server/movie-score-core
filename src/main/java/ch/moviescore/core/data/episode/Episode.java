@@ -1,9 +1,9 @@
 package ch.moviescore.core.data.episode;
 
 import ch.moviescore.core.data.comment.Comment;
-import ch.moviescore.core.data.time.Time;
 import ch.moviescore.core.data.season.Season;
 import ch.moviescore.core.data.subtitle.Subtitle;
+import ch.moviescore.core.data.time.Time;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -32,9 +32,11 @@ public class Episode {
     @ManyToOne
     private Season season;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "episode")
     private List<Comment> comments;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "episode")
     private List<Time> times;
 

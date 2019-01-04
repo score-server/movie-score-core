@@ -1,4 +1,4 @@
-package ch.moviescore.core.model;
+package ch.moviescore.core.model.api;
 
 import ch.moviescore.core.data.movie.Movie;
 import lombok.Data;
