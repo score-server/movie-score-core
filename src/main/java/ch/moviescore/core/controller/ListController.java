@@ -1,6 +1,7 @@
 package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.timeline.TimeLineDao;
+import ch.moviescore.core.data.timeline.Timeline;
 import ch.moviescore.core.service.auth.UserAuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author Wetwer
@@ -28,30 +30,26 @@ public class ListController {
         this.userAuthService = userAuthService;
     }
 
-    @GetMapping
-    public String getLists(@RequestParam(name = "search", required = false, defaultValue = "") String search,
-                           Model model, HttpServletRequest request) {
+    @GetMapping(produces = "application/json")
+    public List<Timeline> getLists(@RequestParam(name = "search", required = false, defaultValue = "") String search,
+                                   Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
-            model.addAttribute("timelines", timeLineDto.searchTimeLine(search));
-            model.addAttribute("search", search);
-            model.addAttribute("page", "timelineList");
-            return "template";
+            return timeLineDto.searchTimeLine(search);
         } else {
-            return "redirect:login/?redirect=/list";
+            return null;
         }
 
     }
 
-    @GetMapping("{timelineId}")
-    public String getOneTimeLine(@PathVariable("timelineId") Long timeLineId,
-                                 Model model, HttpServletRequest request) {
+    @GetMapping(value = "{timelineId}", produces = "application/json")
+    public Timeline getOneTimeLine(@PathVariable("timelineId") Long timeLineId,
+                                   Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
-            model.addAttribute("timeline", timeLineDto.getById(timeLineId));
-            model.addAttribute("page", "timeline");
-            return "template";
+            userAuthService.log(this.getClass(), request);
+            return timeLineDto.getById(timeLineId);
         } else {
-            return "redirect:/login?redirect:/list/" + timeLineId;
+            return null;
         }
 
     }

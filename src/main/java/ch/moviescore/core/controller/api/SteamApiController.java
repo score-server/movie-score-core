@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class SteamApiController {
 
     @ResponseBody
-    @GetMapping("group/{groupName}")
+    @GetMapping(value = "group/{groupName}")
     public String getGroup(@PathVariable String groupName) {
         StringBuilder request = new StringBuilder("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/" +
                 "?key=24B3DE7EC365BCD4597E83D3CC5DD5C8&format=json" +

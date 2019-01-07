@@ -1,7 +1,9 @@
 package ch.moviescore.core.controller;
 
 
+import ch.moviescore.core.data.activitylog.ActivityLog;
 import ch.moviescore.core.data.activitylog.ActivityLogDao;
+import ch.moviescore.core.data.importlog.ImportLog;
 import ch.moviescore.core.data.importlog.ImportLogDao;
 import ch.moviescore.core.model.api.ControlCenterModel;
 import ch.moviescore.core.service.auth.UserAuthService;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author Wetwer
@@ -44,19 +47,31 @@ public class ControlCenterSettings {
     private @ResponseBody
     ControlCenterModel getControlCenter(Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
-
             ControlCenterModel controlCenterModel = new ControlCenterModel();
             controlCenterModel.setMoviePath(settingsService.getKey("moviePath"));
             controlCenterModel.setSeriePath(settingsService.getKey("seriePath"));
             controlCenterModel.setProgress(settingsService.getKey("importProgress"));
             controlCenterModel.setImportActive(settingsService.getKey("import").equals("1"));
             controlCenterModel.setRestartTime(settingsService.getKey("restart"));
-
-//            model.addAttribute("importLogs", importLogDao.getAll());
-//            model.addAttribute("activityLogs", activityLogDao.getAll());
-//            model.addAttribute("requests", requestDao.getAll());
-
             return controlCenterModel;
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping(value = "importLogs", produces = "application/json")
+    public List<ImportLog> getImportLogs(Model model, HttpServletRequest request) {
+        if (userAuthService.isAdministrator(model, request)) {
+            return importLogDao.getAll();
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping(value = "activityLogs", produces = "application/json")
+    public List<ActivityLog> getActivityLogs(Model model, HttpServletRequest request) {
+        if (userAuthService.isAdministrator(model, request)) {
+            return activityLogDao.getAll();
         } else {
             return null;
         }

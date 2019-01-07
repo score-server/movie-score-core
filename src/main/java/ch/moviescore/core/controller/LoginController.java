@@ -54,16 +54,6 @@ public class LoginController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping
-    public String getLogin(Model model, HttpServletRequest request) {
-        if (!userAuthService.isUser(request)) {
-            userAuthService.allowGuest(model, request);
-            model.addAttribute("page", "login");
-            return "template";
-        }
-        return "redirect:/";
-    }
-
     @PostMapping
     public String login(@RequestParam(name = "redirect", required = false, defaultValue = "") String redirectParam,
                         @RequestParam("name") String nameParam,
@@ -127,12 +117,5 @@ public class LoginController {
         } else {
             return "redirect:/";
         }
-    }
-
-    @GetMapping("request")
-    public String noLogin(HttpServletRequest request, Model model) {
-        userAuthService.allowGuest(model, request);
-        model.addAttribute("page", "nologin");
-        return "template";
     }
 }

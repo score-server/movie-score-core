@@ -55,16 +55,6 @@ public class RegisterController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping
-    public String getRegister(Model model, HttpServletRequest request) {
-        if (userAuthService.isAdministrator(model, request)) {
-            model.addAttribute("page", "register");
-            return "template";
-        } else {
-            return "redirect:/";
-        }
-    }
-
     @GetMapping("{groupKey}")
     public String getGroupRegister(@PathVariable("groupKey") String groupKey, Model model, HttpServletRequest request) {
         if (userAuthService.isUser(request)) {
@@ -83,7 +73,6 @@ public class RegisterController {
             }
             return "redirect:/";
         }
-
     }
 
     @PostMapping

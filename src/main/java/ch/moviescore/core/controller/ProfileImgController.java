@@ -1,7 +1,7 @@
 package ch.moviescore.core.controller;
 
-import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.service.auth.UserAuthService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -33,11 +33,16 @@ public class ProfileImgController {
 
     @ResponseBody
     @GetMapping("{userId}")
-    public ResponseEntity<ByteArrayResource> getProfileFile(@PathVariable("userId") Long userId) {
-        ByteArrayResource file = new ByteArrayResource(
-                userDto.getById(userId).getProfileImg());
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    public ResponseEntity<ByteArrayResource> getProfileFile(@PathVariable("userId") Long userId,
+                                                            HttpServletRequest request) {
+        if (userAuthService.isUser(request)) {
+            ByteArrayResource file = new ByteArrayResource(
+                    userDto.getById(userId).getProfileImg());
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        } else {
+            return null;
+        }
     }
 
 

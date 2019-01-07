@@ -1,15 +1,14 @@
 package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.movie.MovieDao;
-import ch.moviescore.core.data.request.RequestDao;
-import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.data.request.Request;
+import ch.moviescore.core.data.request.RequestDao;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.auth.UserAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author Wetwer
@@ -44,17 +44,13 @@ public class RequestController {
         this.activityService = activityService;
     }
 
-    @GetMapping(value = "create")
-    public String getCreateForm(Model model, HttpServletRequest request) {
-        if (userAuthService.isUser(model, request)) {
-            userAuthService.log(this.getClass(), request);
-            model.addAttribute("movies", movieDao.getAll());
-            model.addAttribute("page", "createRequest");
-            return "template";
+    @GetMapping(produces = "application/json")
+    public List<Request> getRequests(HttpServletRequest request) {
+        if (userAuthService.isUser(request)) {
+            return requestDao.getAll();
         } else {
-            return "redirect:/login?redirect=/request/create";
+            return null;
         }
-
     }
 
     @PostMapping("create/{userId}")
@@ -64,13 +60,10 @@ public class RequestController {
             User user = userDao.getById(userId);
 
             Request movieRequest = new Request();
-            switch (type) {
-                case "user":
-                    movieRequest.setRequest("User Request: " + requestParam);
-                    break;
-                default:
-                    movieRequest.setRequest(requestParam);
-                    break;
+            if ("user".equals(type)) {
+                movieRequest.setRequest("User Request: " + requestParam);
+            } else {
+                movieRequest.setRequest(requestParam);
             }
 
             movieRequest.setUser(user);
