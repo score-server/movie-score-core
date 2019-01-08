@@ -90,9 +90,9 @@ public class ControlCenterSettings {
     private String clearImportLogs(HttpServletRequest request) {
         if (userAuthService.isAdministrator(request)) {
             importLogDao.delete();
-            return "redirect:/settings";
+            return "CLEAR";
         } else {
-            return "redirect:/login?redirect=/settings/error";
+            return "AUTH_ERROR";
         }
 
     }
@@ -101,9 +101,9 @@ public class ControlCenterSettings {
     private String clearActivityLogs(HttpServletRequest request) {
         if (userAuthService.isAdministrator(request)) {
             activityLogDao.delete();
-            return "redirect:/settings";
+            return "CLEAR";
         } else {
-            return "redirect:/login?redirect=/settings/error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -111,9 +111,9 @@ public class ControlCenterSettings {
     private String scedule(@RequestParam("time") String time, HttpServletRequest request) {
         if (userAuthService.isAdministrator(request)) {
             settingsService.setValue("restart", time);
-            return "redirect:/settings?sceduled";
+            return "SCEDULED";
         } else {
-            return "redirect:/login?redirect=/settings/error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -121,9 +121,9 @@ public class ControlCenterSettings {
     private String scedule(HttpServletRequest request) {
         if (userAuthService.isAdministrator(request)) {
             settingsService.setValue("restart", "0");
-            return "redirect:/settings?canceled";
+            return "CANCELED";
         } else {
-            return "redirect:/login?redirect=/settings/error";
+            return "AUTH_ERROR";
         }
     }
 }

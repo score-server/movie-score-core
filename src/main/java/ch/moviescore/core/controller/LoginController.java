@@ -1,22 +1,20 @@
 package ch.moviescore.core.controller;
 
-import ch.moviescore.core.data.session.SessionDao;
-import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.data.session.Session;
+import ch.moviescore.core.data.session.SessionDao;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.auth.CookieService;
 import ch.moviescore.core.service.auth.SessionService;
 import ch.moviescore.core.service.auth.ShaService;
 import ch.moviescore.core.service.auth.UserAuthService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +28,7 @@ import java.util.Random;
  */
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("login")
 public class LoginController {
 
@@ -63,22 +61,10 @@ public class LoginController {
 
         try {
             userDto.exists(user);
-            String sessionId = shaService.encode(String.valueOf(new Random().nextInt()));
-            cookieService.setUserCookie(response, sessionId);
-            sessionService.addSession(user, sessionId);
-            user.setLastLogin(new Timestamp(new Date().getTime()));
-            userDto.save(user);
-            activityService.log(user.getName() + " logged in", user);
-            switch (redirectParam) {
-                case "null":
-                    return "redirect:/";
-                case "score":
-                    return "redirect:http://scorewinner.ch";
-                default:
-                    return "redirect:" + redirectParam;
-            }
+            loginProcess(response, user, shaService, cookieService, sessionService, userDto, activityService);
+            return "LOGGEDIN";
         } catch (NullPointerException e) {
-            return "redirect:/login?error&user=" + nameParam;
+            return "AUTH_ERROR - " + nameParam;
         }
     }
 
@@ -117,5 +103,18 @@ public class LoginController {
         } else {
             return "redirect:/";
         }
+    }
+
+    static void loginProcess(HttpServletResponse response, User user, ShaService shaService, CookieService cookieService, SessionService sessionService, UserDao userDto, ActivityService activityService) {
+        loginProcess(response, user, shaService, cookieService, sessionService);
+        userDto.save(user);
+        activityService.log(user.getName() + " logged in", user);
+    }
+
+    static void loginProcess(HttpServletResponse response, User user, ShaService shaService, CookieService cookieService, SessionService sessionService) {
+        String sessionId = shaService.encode(String.valueOf(new Random().nextInt()));
+        cookieService.setUserCookie(response, sessionId);
+        sessionService.addSession(user, sessionId);
+        user.setLastLogin(new Timestamp(new Date().getTime()));
     }
 }

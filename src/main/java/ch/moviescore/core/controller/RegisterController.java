@@ -55,26 +55,6 @@ public class RegisterController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping("{groupKey}")
-    public String getGroupRegister(@PathVariable("groupKey") String groupKey, Model model, HttpServletRequest request) {
-        if (userAuthService.isUser(request)) {
-            return "redirect:/?login";
-        } else {
-            userAuthService.allowGuest(model, request);
-
-            for (GroupInvite groupInvite : groupDao.getAll()) {
-                if (groupInvite.getName().equals(groupKey)) {
-                    if (groupInvite.isActive()) {
-                        model.addAttribute("groupKey", groupKey);
-                        model.addAttribute("page", "fullRegister");
-                        return "template";
-                    }
-                }
-            }
-            return "redirect:/";
-        }
-    }
-
     @PostMapping
     public String register(@RequestParam("name") String nameParam, HttpServletRequest request) {
         User adminUser = userAuthService.getUser(request).getUser();
@@ -87,7 +67,6 @@ public class RegisterController {
                 user.setRole(1);
                 String authkey = shaService.encode(String.valueOf(new Random().nextInt())).substring(1, 7);
                 user.setAuthKey(authkey);
-                user.setSexabig(false);
                 userDao.save(user);
                 activityService.log(nameParam + " registered by " + adminUser.getName(), adminUser);
                 return "redirect:/register?added=" + authkey;
@@ -122,12 +101,7 @@ public class RegisterController {
                     userDao.save(user);
                     activityService.log(nameParam + " registered with groupkey " + groupKey, user);
 
-                    String sessionId = shaService.encode(String.valueOf(new Random().nextInt()));
-                    cookieService.setUserCookie(response, sessionId);
-                    sessionService.addSession(user, sessionId);
-                    user.setLastLogin(new Timestamp(new Date().getTime()));
-                    userDao.save(user);
-                    activityService.log(user.getName() + " logged in", user);
+                    LoginController.loginProcess(response, user, shaService, cookieService, sessionService, userDao, activityService);
 
                     return "redirect:/";
                 }

@@ -6,17 +6,19 @@ import ch.moviescore.core.data.movie.Movie;
 import ch.moviescore.core.data.movie.MovieDao;
 import ch.moviescore.core.data.time.TimeDao;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.model.api.MovieModel;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.SimilarMovieService;
 import ch.moviescore.core.service.auth.UserAuthService;
 import ch.moviescore.core.service.importer.MovieImportService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -26,7 +28,7 @@ import java.io.File;
  * @project movie-db
  */
 
-@Controller
+@RestController
 @RequestMapping("movie")
 public class MovieController {
 
@@ -52,38 +54,23 @@ public class MovieController {
     }
 
 
-    @GetMapping("{movieId}")
-    public String getOneMovie(@PathVariable("movieId") Long movieId, Model model, HttpServletRequest request) {
+    @GetMapping(value = "{movieId}", produces = "application/json")
+    public @ResponseBody
+    MovieModel getOneMovie(@PathVariable("movieId") Long movieId, Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
+
             Movie movie = movieDto.getById(movieId);
-            model.addAttribute("movie", movie);
-            model.addAttribute("similar", similarMovieService.getSimilarMovies(movie));
-
-            try {
-                Likes likes = likesDto.getByUserAndMovie(userAuthService.getUser(request).getUser(), movie);
-                likes.getId();
-                model.addAttribute("hasliked", true);
-            } catch (NullPointerException e) {
-                model.addAttribute("hasliked", false);
-            }
             User user = userAuthService.getUser(request).getUser();
-            try {
-                activityService.log(user.getName() + " gets Movie " + movie.getTitle(), user);
-            } catch (NullPointerException e) {
-                activityService.log("Guest gets Trailer " + movie.getTitle(), null);
-            }
 
-            try {
-                model.addAttribute("time", timeDto.getByUserAndMovie(user, movie).getTime());
-            } catch (NullPointerException e) {
-                model.addAttribute("time", 0);
-            }
+            MovieModel movieModel = new MovieModel();
+            movieModel.setMovie(movie);
+            movieModel.setSimilarMovies(similarMovieService.getSimilarMovies(movie));
+            setTimeAndLikes(request, movie, user, movieModel);
 
-            model.addAttribute("page", "movie");
-            return "template";
+            return movieModel;
         } else {
-            return "redirect:/login?redirect=/movie/" + movieId;
+            return null;
         }
     }
 
@@ -142,6 +129,22 @@ public class MovieController {
             return "redirect:/movie/" + movieId + "?attributes";
         } else {
             return "redirect:/movie/" + movieId;
+        }
+    }
+
+    private void setTimeAndLikes(HttpServletRequest request, Movie movie, User user, MovieModel movieModel) {
+        try {
+            movieModel.setTime(timeDto.getByUserAndMovie(user, movie).getTime());
+        } catch (NullPointerException e) {
+            movieModel.setTime(0f);
+        }
+
+        try {
+            Likes likes = likesDto.getByUserAndMovie(userAuthService.getUser(request).getUser(), movie);
+            likes.getId();
+            movieModel.setLiked(true);
+        } catch (NullPointerException e) {
+            movieModel.setLiked(false);
         }
     }
 }

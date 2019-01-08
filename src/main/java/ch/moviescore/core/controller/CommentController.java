@@ -54,7 +54,7 @@ public class CommentController {
             activityService.log(user.getName() + " created Comment on Movie " + movie.getTitle());
             return "redirect:/movie/" + movieId;
         } else {
-            return "redirect:/movie/" + movieId + "?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -71,7 +71,7 @@ public class CommentController {
             activityService.log(user.getName() + " created Comment on Episode " + episode.getFullTitle());
             return "redirect:/episode/" + episodeId;
         } else {
-            return "redirect:/episode/" + episodeId + "?error";
+            return "AUTH_ERROR";
         }
     }
 }

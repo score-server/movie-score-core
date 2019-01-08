@@ -1,17 +1,17 @@
 package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.season.SeasonDao;
-import ch.moviescore.core.data.serie.SerieDao;
 import ch.moviescore.core.data.serie.Serie;
-import ch.moviescore.core.service.GenreSearchType;
+import ch.moviescore.core.data.serie.SerieDao;
+import ch.moviescore.core.model.api.SerieListModel;
 import ch.moviescore.core.service.SearchService;
 import ch.moviescore.core.service.auth.UserAuthService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Wetwer
  * @project movie-db
  */
-@Controller
+@RestController
 @RequestMapping("serie")
 public class SeriesController {
 
@@ -38,35 +38,29 @@ public class SeriesController {
     }
 
     @GetMapping
-    public String getSeries(@RequestParam(name = "search", required = false, defaultValue = "") String search,
-                            @RequestParam(name = "genre", required = false, defaultValue = "") String genreParam,
-                            Model model, HttpServletRequest request) {
+    public SerieListModel getSeries(@RequestParam(name = "search", required = false, defaultValue = "") String search,
+                                    @RequestParam(name = "genre", required = false, defaultValue = "") String genreParam,
+                                    Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
-            model.addAttribute("genres", searchService.getGenres(GenreSearchType.SERIE));
-            model.addAttribute("series", searchService.searchSerie(search, genreParam));
 
-            model.addAttribute("search", search);
-            model.addAttribute("currentGenre", genreParam);
+            SerieListModel serieListModel = new SerieListModel();
+            serieListModel.setGenre(genreParam);
+            serieListModel.setSearchParam(search);
+            serieListModel.setSeries(searchService.searchSerie(search, genreParam));
 
-            model.addAttribute("page", "serieList");
-            return "template";
+            return serieListModel;
         } else {
-            return "redirect:/login?redirect=/serie";
+            return null;
         }
     }
 
     @GetMapping(value = "/{serieId}")
-    public String getOneSerie(@PathVariable("serieId") Long serieId, Model model, HttpServletRequest request) {
+    public Serie getOneSerie(@PathVariable("serieId") Long serieId, Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
-            Serie serie = serieDao.getById(serieId);
-
-            model.addAttribute("serie", serie);
-            model.addAttribute("seasons", seasonDao.getBySerie(serie));
-            model.addAttribute("page", "serie");
-            return "template";
+            return serieDao.getById(serieId);
         } else {
-            return "redirect:/login?redirect=/serie/" + serieId;
+            return null;
         }
 
     }

@@ -1,14 +1,14 @@
 package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.episode.EpisodeDao;
-import ch.moviescore.core.data.season.SeasonDao;
 import ch.moviescore.core.data.season.Season;
+import ch.moviescore.core.data.season.SeasonDao;
 import ch.moviescore.core.service.auth.UserAuthService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Wetwer
  * @project movie-db
  */
-@Controller
+@RestController
 @RequestMapping("season")
 public class SeasonController {
 
@@ -31,18 +31,14 @@ public class SeasonController {
         this.episodeDao = episodeDao;
     }
 
-    @GetMapping(value = "/{seasonId}")
-    public String getOneSeason(@PathVariable("seasonId") Long seasonId, Model model, HttpServletRequest request) {
+    @GetMapping(value = "/{seasonId}", produces = "application/json")
+    public Season getOneSeason(@PathVariable("seasonId") Long seasonId, Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
-            Season season = seasonDao.getById(seasonId);
 
-            model.addAttribute("season", season);
-            model.addAttribute("episodes", episodeDao.getBySeason(season));
-            model.addAttribute("page", "season");
-            return "template";
+            return seasonDao.getById(seasonId);
         } else {
-            return "redirect:/login?redirect=/season/" + seasonId;
+            return null;
         }
     }
 

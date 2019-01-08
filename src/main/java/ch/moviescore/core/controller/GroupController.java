@@ -1,9 +1,10 @@
 package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.groupinvite.GroupDao;
-import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.data.groupinvite.GroupInvite;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
+import ch.moviescore.core.model.GroupModel;
 import ch.moviescore.core.service.auth.UserAuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Wetwer
@@ -36,14 +39,23 @@ public class GroupController {
     }
 
     @GetMapping
-    public String getGroupList(HttpServletRequest request, Model model) {
+    public List<GroupModel> getGroupList(HttpServletRequest request, Model model) {
         if (userAuthService.isAdministrator(model, request)) {
-            model.addAttribute("groups", groupDao.getAll());
-            model.addAttribute("users", userDao.getAll());
-            model.addAttribute("page", "groupList");
-            return "template";
+            userAuthService.log(this.getClass(), request);
+
+            List<GroupModel> groupModelList = new ArrayList<>();
+
+            for (GroupInvite group : groupDao.getAll()) {
+                GroupModel groupModel = new GroupModel();
+                groupModel.setGroup(group);
+                groupModel.setUsers(group.getUsers());
+                groupModelList.add(groupModel);
+            }
+
+            return groupModelList;
+        } else {
+            return null;
         }
-        return "redirect:/";
     }
 
     @PostMapping("/delete/{groupId}")
@@ -56,9 +68,9 @@ public class GroupController {
                 group.setActive(true);
             }
             groupDao.save(group);
-            return "redirect:/group?deactivated";
+            return "DEACTIVATED";
         }
-        return "redirect:/";
+        return "AUTH_ERROR";
     }
 
     @PostMapping("/new")
@@ -67,9 +79,9 @@ public class GroupController {
             GroupInvite groupInvite = new GroupInvite();
             groupInvite.setName(name);
             groupDao.save(groupInvite);
-            return "redirect:/group?created";
+            return "SAVED";
         }
-        return "redirect:/";
+        return "AUTH_ERROR";
 
     }
 
@@ -79,9 +91,9 @@ public class GroupController {
             User user = userDao.getById(userId);
             user.setGroup(null);
             userDao.save(user);
-            return "redirect:/group?removed";
+            return "REMOVED";
         }
-        return "redirect:/";
+        return "AUTH_ERROR";
 
     }
 
@@ -93,11 +105,11 @@ public class GroupController {
                 User user = userDao.getByName(name);
                 user.setGroup(groupDao.getById(groupId));
                 userDao.save(user);
-                return "redirect:/group?added";
+                return "ADDED";
             } catch (NullPointerException e) {
-                return "redirect:/group?notexist=" + name;
+                return "NOT_EXIST";
             }
         }
-        return "redirect:/";
+        return "AUTH_ERROR";
     }
 }

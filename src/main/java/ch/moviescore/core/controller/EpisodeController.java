@@ -79,9 +79,9 @@ public class EpisodeController {
             episodeDao.save(episode);
             activityService.log(user.getName() + " changed Path on "
                     + episode.getFullTitle() + " to " + path, user);
-            return "redirect:/episode/" + episodeId + "?path";
+            return "CHANGED";
         } else {
-            return "redirect:/episode/" + episodeId;
+            return "AUTH_ERROR";
         }
     }
 }

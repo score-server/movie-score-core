@@ -1,25 +1,25 @@
 package ch.moviescore.core.controller;
 
+import ch.moviescore.core.data.listmovie.ListMovie;
 import ch.moviescore.core.data.listmovie.ListMovieDao;
 import ch.moviescore.core.data.movie.MovieDao;
 import ch.moviescore.core.data.timeline.TimeLineDao;
-import ch.moviescore.core.data.listmovie.ListMovie;
 import ch.moviescore.core.data.timeline.Timeline;
 import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.ListService;
 import ch.moviescore.core.service.auth.UserAuthService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Controller
+@RestController
 @RequestMapping("timeline")
 public class TimelineController {
 
@@ -40,26 +40,6 @@ public class TimelineController {
         this.userAuthService = userAuthService;
         this.activityService = activityService;
         this.listService = listService;
-    }
-
-    @GetMapping("edit/{timelineId}")
-    public String editTimeline(@PathVariable("timelineId") Long timeLineId,
-                               Model model, HttpServletRequest request) {
-
-        if (userAuthService.isUser(model, request)) {
-            userAuthService.log(this.getClass(), request);
-            Timeline timeLine = timeLineDao.getById(timeLineId);
-            if (userAuthService.isCurrentUser(request, timeLine.getUser())
-                    || userAuthService.isAdministrator(request)) {
-                model.addAttribute("timeline", timeLine);
-                model.addAttribute("movies", movieDao.getOrderByTitle());
-                listService.getNextListPlace(model, timeLine);
-
-                model.addAttribute("page", "editTimeline");
-                return "template";
-            }
-        }
-        return "redirect:/list";
     }
 
     @PostMapping("edit/{timelineId}")
@@ -83,7 +63,7 @@ public class TimelineController {
         return "redirect:/" + timeLineId;
     }
 
-    @PostMapping("editatt/{timelineId}")
+    @PostMapping("attributes/{timelineId}")
     public String editListAttributes(@PathVariable("timelineId") Long timeLineId,
                                      @RequestParam("title") String title,
                                      @RequestParam("description") String description,
@@ -115,18 +95,6 @@ public class TimelineController {
         }
         return "redirect:/list";
     }
-
-    @GetMapping("new")
-    public String getCreateForm(HttpServletRequest request, Model model) {
-        if (userAuthService.isUser(model, request)) {
-            userAuthService.log(this.getClass(), request);
-            model.addAttribute("page", "createTimeline");
-            return "template";
-        } else {
-            return "redirect:/list";
-        }
-    }
-
 
     @PostMapping("new")
     public String createList(@RequestParam("title") String title,

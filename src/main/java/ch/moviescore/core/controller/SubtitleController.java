@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ import java.io.IOException;
  * @created 26.11.2018
  **/
 
-@Controller
+@RestController
 @RequestMapping("subtitle")
 public class SubtitleController {
 
@@ -39,17 +40,6 @@ public class SubtitleController {
         this.movieDao = movieDao;
         this.subtitleDao = subtitleDao;
         this.userAuthService = userAuthService;
-    }
-
-    @GetMapping("add")
-    public String getAddSubtitlesForm(Model model, HttpServletRequest request) {
-        if (userAuthService.isUser(model, request)) {
-            userAuthService.log(this.getClass(), request);
-            model.addAttribute("movies", movieDao.getAll());
-            model.addAttribute("page", "subtitle");
-            return "template";
-        }
-        return "redirect:/movie";
     }
 
     @PostMapping("add")

@@ -48,8 +48,7 @@ public class GroupApiController {
         if (userDto.getBySessionId(sessionId) != null) {
             GroupInvite group = groupDao.getById(groupId);
             GroupModel groupModel = new GroupModel();
-            groupModel.setId(group.getId());
-            groupModel.setName(group.getName());
+            groupModel.setGroup(group);
             groupModel.setUsers(group.getUsers());
             return groupModel;
         } else {

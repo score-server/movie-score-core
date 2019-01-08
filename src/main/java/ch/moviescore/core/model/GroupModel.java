@@ -1,5 +1,6 @@
 package ch.moviescore.core.model;
 
+import ch.moviescore.core.data.groupinvite.GroupInvite;
 import ch.moviescore.core.data.user.User;
 import lombok.Data;
 
@@ -14,9 +15,7 @@ import java.util.List;
 @Data
 public class GroupModel {
 
-    private Long id;
-
-    private String name;
+    private GroupInvite group;
 
     private List<User> users;
 

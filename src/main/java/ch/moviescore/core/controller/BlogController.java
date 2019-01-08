@@ -56,9 +56,9 @@ public class BlogController {
             User user = userAuthService.getUser(request).getUser();
             blogDao.createBlog(title, text, user);
             activityService.log(user.getName() + " created new Blog Post", user);
-            return "success";
+            return "SAVED";
         } else {
-            return null;
+            return "AUTH_ERROR";
         }
     }
 
@@ -67,9 +67,9 @@ public class BlogController {
                              Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
             blogDao.delete(blogDao.getById(blogId));
-            return "success";
+            return "DELETED";
         } else {
-            return "redirect:/blog?notdeleted";
+            return "AUTH_ERROR";
         }
 
     }

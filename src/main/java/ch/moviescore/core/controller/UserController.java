@@ -1,23 +1,24 @@
 package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.activitylog.ActivityLogDao;
+import ch.moviescore.core.data.session.Session;
 import ch.moviescore.core.data.session.SessionDao;
 import ch.moviescore.core.data.timeline.TimeLineDao;
-import ch.moviescore.core.data.user.UserDao;
-import ch.moviescore.core.data.session.Session;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
+import ch.moviescore.core.model.api.UserListModel;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.SearchService;
 import ch.moviescore.core.service.auth.ShaService;
 import ch.moviescore.core.service.auth.UserAuthService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Random;
@@ -28,7 +29,7 @@ import java.util.Random;
  */
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("user")
 public class UserController {
 
@@ -57,43 +58,29 @@ public class UserController {
     }
 
     @GetMapping
-    public String getUserList(@RequestParam(name = "search", required = false, defaultValue = "") String search,
-                              Model model, HttpServletRequest request) {
+    public UserListModel getUserList(@RequestParam(name = "search", required = false, defaultValue = "") String search,
+                                     Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
-            model.addAttribute("users", searchService.searchUser(search));
-            model.addAttribute("search", search);
-            model.addAttribute("page", "userList");
-            return "template";
+
+            UserListModel userListModel = new UserListModel();
+            userListModel.setUserList(searchService.searchUser(search));
+            userListModel.setSearch(search);
+
+            return userListModel;
         } else {
-            return "redirect:/login?redirect=/user";
+            return null;
         }
     }
 
     @GetMapping(value = "{userId}")
-    public String getOneUser(@PathVariable("userId") Long userId, Model model, HttpServletRequest request) {
+    public User getOneUser(@PathVariable("userId") Long userId, Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
-            User user = userDao.getById(userId);
 
-            model.addAttribute("user", user);
-            model.addAttribute("sessions", sessionDao.getByUser(user));
-            model.addAttribute("currentSession", userAuthService.getCurrentSessionId(request));
-            model.addAttribute("requests", user.getRequests());
-            model.addAttribute("timelines", timeLineDao.getByUser(user));
-            model.addAttribute("activities",
-                    logDao.getAllByUser(user));
-            if (user.getPasswordSha().endsWith("-NOK")) {
-                model.addAttribute("registered", false);
-            } else {
-                model.addAttribute("registered", true);
-            }
-
-
-            model.addAttribute("page", "user");
-            return "template";
+            return userDao.getById(userId);
         } else {
-            return "redirect:/login?redirect=/user/" + userId;
+            return null;
         }
     }
 
@@ -109,28 +96,6 @@ public class UserController {
             userDao.save(user);
             activityService.log(currentUser.getName() + " changed role of " + user.getName() + " to " + role, user);
             return "redirect:/user/" + userId + "?role";
-        } else {
-            return "redirect:/user/" + userId + "?error";
-        }
-    }
-
-    @PostMapping(value = "{userId}/group/{alpha}")
-    public String setAlpha(@PathVariable("userId") Long userId, @PathVariable("alpha") String alpha,
-                           HttpServletRequest request) {
-        User currentUser = userAuthService.getUser(request).getUser();
-
-        if (userAuthService.isAdministrator(request)) {
-            userAuthService.log(this.getClass(), request);
-            User user = userDao.getById(userId);
-            if (alpha.equals("1")) {
-                activityService.log(currentUser.getName() + " is Sexy", user);
-                user.setSexabig(true);
-            } else if (alpha.equals("0")) {
-                user.setSexabig(false);
-                activityService.log(currentUser.getName() + " is no longer Sexy", user);
-            }
-            userDao.save(user);
-            return "redirect:/user/" + userId;
         } else {
             return "redirect:/user/" + userId + "?error";
         }

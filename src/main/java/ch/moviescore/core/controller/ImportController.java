@@ -2,15 +2,15 @@ package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.service.ActivityService;
-import ch.moviescore.core.service.filehandler.SettingsService;
 import ch.moviescore.core.service.auth.UserAuthService;
+import ch.moviescore.core.service.filehandler.SettingsService;
 import ch.moviescore.core.service.importer.MovieImportService;
 import ch.moviescore.core.service.importer.SeriesImportService;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Wetwer
  * @project movie-db
  */
-@Controller
+@RestController
 @RequestMapping("import")
 public class ImportController {
 
@@ -47,9 +47,9 @@ public class ImportController {
             }
             newMovieMovieImportService.importAll();
             activityService.log(user.getName() + " started Movie Import", user);
-            return "redirect:/settings";
+            return "IMPORTING";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -62,9 +62,9 @@ public class ImportController {
             }
             newMovieMovieImportService.updateAll();
             activityService.log(user.getName() + " started Movie Update", user);
-            return "redirect:/settings";
+            return "UPDATING";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -77,9 +77,9 @@ public class ImportController {
             }
             newSeriesImportService.importAll();
             activityService.log(user.getName() + " started Series Import", user);
-            return "redirect:/settings";
+            return "IMPORTING";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -92,9 +92,9 @@ public class ImportController {
             }
             newSeriesImportService.updateAll();
             activityService.log(user.getName() + " started Series Update", user);
-            return "redirect:/settings";
+            return "UPDATING";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -103,9 +103,9 @@ public class ImportController {
     public String setMovieImportPath(@RequestParam("path") String pathParam, Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
             settingsService.setValue("moviePath", pathParam);
-            return "redirect:/settings";
+            return "SAVED";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -113,9 +113,9 @@ public class ImportController {
     public String setSerieImportPath(@RequestParam("path") String pathParam, Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
             settingsService.setValue("seriePath", pathParam);
-            return "redirect:/settings";
+            return "SAVED";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -123,9 +123,9 @@ public class ImportController {
     public String importReset(Model model, HttpServletRequest request) {
         if (userAuthService.isAdministrator(model, request)) {
             newMovieMovieImportService.setImportStatus("0");
-            return "redirect:/settings";
+            return "CLEARED";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 }

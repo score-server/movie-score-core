@@ -1,7 +1,7 @@
 package ch.moviescore.core.controller;
 
-import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.auth.CookieService;
 import ch.moviescore.core.service.auth.SessionService;
@@ -49,31 +49,24 @@ public class FastLoginController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping
-    public String getFastLogin(Model model, HttpServletRequest request) {
-        userAuthService.allowGuest(model, request);
-        model.addAttribute("page", "fastlogin");
-        return "template";
-    }
-
     @GetMapping("{authkey}")
     public String checkFastLogin(@PathVariable("authkey") String authkey, Model model, HttpServletRequest request,
                                  HttpServletResponse response) {
         if (userAuthService.isUser(request)) {
-            return "redirect:/?login";
+            return "LOGEDIN";
         } else {
             userAuthService.allowGuest(model, request);
             for (User user : userDao.getAll()) {
                 if (user.getAuthKey() == null) {
-                    return "redirect:/fastlogin?error";
+                    return "ERROR";
                 } else if (authkey.equals(user.getAuthKey())) {
                     cookieService.setFastLoginCookie(response, user);
                     userDao.save(user);
                     activityService.log(user.getName() + " used Authkeylink", user);
-                    return "redirect:/fastlogin/settings";
+                    return "FASTLOGIN";
                 }
             }
-            return "redirect:/login?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -82,25 +75,15 @@ public class FastLoginController {
 
         for (User user : userDao.getAll()) {
             if (user.getAuthKey() == null) {
-                return "redirect:/fastlogin?error";
+                return "AUTH_NULL";
             } else if (authkey.equals(user.getAuthKey())) {
                 cookieService.setFastLoginCookie(response, user);
                 userDao.save(user);
                 activityService.log(user.getName() + " logged in with Authkey", user);
-                return "redirect:/fastlogin/settings";
+                return "AUTH_ALLOWED";
             }
         }
-        return "redirect:/fastlogin?error";
-    }
-
-    @GetMapping("settings")
-    public String getSettings(Model model, HttpServletRequest request) {
-        if (cookieService.getFastLogin(request) != null) {
-            model.addAttribute("user", cookieService.getFastLogin(request));
-            model.addAttribute("page", "fastsettings");
-            return "template";
-        }
-        return "redirect:/fastlogin?authkey";
+        return "AUTH_ERROR";
     }
 
     @PostMapping("settings/{userId}")
@@ -115,21 +98,18 @@ public class FastLoginController {
             user.setVideoPlayer(player);
             user.setAuthKey(shaService.encode(String.valueOf(new Random().nextInt())));
 
-            String sessionId = shaService.encode(String.valueOf(new Random().nextInt()));
-            cookieService.setUserCookie(response, sessionId);
-            sessionService.addSession(user, sessionId);
-            user.setLastLogin(new Timestamp(new Date().getTime()));
+            LoginController.loginProcess(response, user, shaService, cookieService, sessionService);
             try {
                 userDao.save(user);
             } catch (Exception e) {
-                return "redirect:/fastlogin/settings?exists";
+                return "EXISTS";
             }
             activityService.log(user.getName() + " registered with fastlogin", user);
 
             userDao.save(user);
-            return "redirect:/";
+            return "LOGGEDIN";
         }
-        return "redirect:/fastlogin/settings?error";
+        return "AUTH_ERROR";
     }
 
 
