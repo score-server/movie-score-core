@@ -53,9 +53,9 @@ public class ProfileImgController {
             User user = userDto.getById(userId);
             user.setProfileImg(file.getBytes());
             userDto.save(user);
-            return "redirect:/user/" + userId + "?profile";
+            return "UPLOADED";
         } else {
-            return "redirect:/user/" + userId + "?profileerror";
+            return "AUTH_ERROR";
         }
     }
 }

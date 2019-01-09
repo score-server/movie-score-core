@@ -84,16 +84,17 @@ public class MovieController {
                 likes.getId();
                 likesDto.delete(likes);
                 activityService.log(user.getName() + " removed like on movie " + movie.getTitle(), user);
+                return "REMOVED_LIKED";
             } catch (NullPointerException e) {
                 Likes likes = new Likes();
                 likes.setMovie(movie);
                 likes.setUser(user);
                 likesDto.save(likes);
                 activityService.log(user.getName() + " likes movie " + movie.getTitle(), user);
+                return "LIKED";
             }
-            return "redirect:/movie/" + movieId;
         } else {
-            return "redirect:/login?redirect=/movie/" + movieId;
+            return "AUTH_ERROR";
         }
     }
 
@@ -108,14 +109,14 @@ public class MovieController {
             movieDto.save(movie);
             movieImportService.updateFile(new File(path));
             activityService.log(user.getName() + " changed Path on Movie " + movie.getTitle() + " to " + path, user);
-            return "redirect:/movie/" + movieId + "?path";
+            return "CHANGED";
         } else {
-            return "redirect:/movie/" + movieId;
+            return "AUTH_ERROR";
         }
     }
 
     @PostMapping("{movieId}/attributes")
-    public String setMoviePath(@PathVariable("movieId") Long movieId, @RequestParam("quality") String quality,
+    public String setMovieAttributes(@PathVariable("movieId") Long movieId, @RequestParam("quality") String quality,
                                @RequestParam("year") String year,
                                @RequestParam("tmdbId") Integer tmdbId,
                                HttpServletRequest request) {
@@ -126,9 +127,9 @@ public class MovieController {
             movie.setTmdbId(tmdbId);
             movieDto.save(movie);
             movieImportService.updateFile(new File(movie.getVideoPath()));
-            return "redirect:/movie/" + movieId + "?attributes";
+            return "CHANGED";
         } else {
-            return "redirect:/movie/" + movieId;
+            return "AUTH_ERROR";
         }
     }
 

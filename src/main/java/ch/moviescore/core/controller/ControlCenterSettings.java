@@ -82,7 +82,7 @@ public class ControlCenterSettings {
         if (userAuthService.isAdministrator(model, request)) {
             return new FileHandler("log.log").read();
         } else {
-            return "redirect:/login?redirect=/settings/error";
+            return "AUTH_ERROR";
         }
     }
 

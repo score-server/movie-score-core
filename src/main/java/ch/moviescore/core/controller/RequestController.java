@@ -70,9 +70,9 @@ public class RequestController {
             movieRequest.setActive("1");
             requestDao.save(movieRequest);
             activityService.log(user.getName() + " created Request for " + requestParam, user);
-            return "redirect:/user/" + userId + "?request";
+            return "CREATED";
         } else {
-            return "redirect:/user/" + userId;
+            return "AUTH_ERROR";
         }
     }
 
@@ -88,9 +88,9 @@ public class RequestController {
             movieRequest.setActive("1");
             requestDao.save(movieRequest);
             activityService.log(user.getName() + " created Takedown Request for Movie " + movieId, user);
-            return "redirect:/user/" + user.getId() + "?request";
+            return "CREATED";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -100,9 +100,9 @@ public class RequestController {
             Request movieRequest = requestDao.getById(requestId);
             movieRequest.setActive("0");
             requestDao.save(movieRequest);
-            return "redirect:/settings#request";
+            return "CLOSED";
         } else {
-            return "redirect:/settings?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -112,23 +112,21 @@ public class RequestController {
             Request movieRequest = requestDao.getById(requestId);
             movieRequest.setActive("1");
             requestDao.save(movieRequest);
-            return "redirect:/settings#request";
+            return "OPENED";
         } else {
-            return "redirect:/settings?error";
+            return "AUTH_ERROR";
         }
     }
 
     @PostMapping("{requestId}/delete")
     public String deleteRequest(@PathVariable("requestId") Long requestId, HttpServletRequest request) {
         Request movieRequest = requestDao.getById(requestId);
-        if (userAuthService.isAdministrator(request)) {
+        if (userAuthService.isAdministrator(request)
+                || userAuthService.isCurrentUser(request, movieRequest.getUser())) {
             requestDao.delete(movieRequest);
-            return "redirect:/settings#request";
-        } else if (userAuthService.isCurrentUser(request, movieRequest.getUser())) {
-            requestDao.delete(movieRequest);
-            return "redirect:/user/" + movieRequest.getUser().getId() + "?removedRequest";
+            return "DELETED";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 
@@ -136,18 +134,18 @@ public class RequestController {
     public String editRequest(@PathVariable("requestId") Long requestId,
                               @RequestParam("request") String newRequest,
                               HttpServletRequest request) {
+
         Request movieRequest = requestDao.getById(requestId);
-        if (userAuthService.isAdministrator(request)) {
-            movieRequest.setRequest(newRequest);
-            requestDao.save(movieRequest);
-            return "redirect:/settings#request";
-        } else if (userAuthService.isCurrentUser(request, movieRequest.getUser())) {
+        if (userAuthService.isAdministrator(request)
+                || userAuthService.isCurrentUser(request, movieRequest.getUser())) {
+
             movieRequest.setRequest(newRequest);
             requestDao.save(movieRequest);
             userAuthService.log(this.getClass(), movieRequest.getUser());
-            return "redirect:/user/" + movieRequest.getUser().getId() + "?requestChanged";
+
+            return "CHANGED";
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 

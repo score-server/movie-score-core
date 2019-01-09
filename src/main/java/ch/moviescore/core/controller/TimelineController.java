@@ -10,7 +10,6 @@ import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.ListService;
 import ch.moviescore.core.service.auth.UserAuthService;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,11 +56,13 @@ public class TimelineController {
                 listMovie.setMovie(movieDao.getById(movieId));
                 listMovie.setTimeline(timeline);
                 listMovieDao.save(listMovie);
-                return "redirect:/timeline/edit/" + timeLineId;
+                return "ADDED";
             }
+            return "AUTH_ERROR";
         }
-        return "redirect:/" + timeLineId;
+        return "AUTH_ERROR";
     }
+
 
     @PostMapping("attributes/{timelineId}")
     public String editListAttributes(@PathVariable("timelineId") Long timeLineId,
@@ -70,30 +71,37 @@ public class TimelineController {
                                      HttpServletRequest request) {
         if (userAuthService.isUser(request)) {
             userAuthService.log(this.getClass(), request);
+
             Timeline timeline = timeLineDao.getById(timeLineId);
+
             if (userAuthService.isCurrentUser(request, timeline.getUser())
                     || userAuthService.isAdministrator(request)) {
                 timeline.setTitle(title);
                 timeline.setDescription(description);
                 timeLineDao.save(timeline);
-                return "redirect:/timeline/edit/" + timeLineId;
+
+                return "CHANGED";
             }
+            return "AUTH_ERROR";
         }
-        return "redirect:/" + timeLineId;
+        return "AUTH_ERROR";
     }
 
     @PostMapping("delete/movie/{movieId}")
     public String deleteFromList(@PathVariable("movieId") Long movieId, HttpServletRequest request) {
         if (userAuthService.isUser(request)) {
             userAuthService.log(this.getClass(), request);
+
             ListMovie listMovie = listMovieDao.getById(movieId);
+
             if (userAuthService.isCurrentUser(request, listMovie.getTimeline().getUser())
                     || userAuthService.isAdministrator(request)) {
                 listMovieDao.delete(listMovie);
-                return "redirect:/timeline/edit/" + listMovie.getTimeline().getId();
+
+                return "REMOVED";
             }
         }
-        return "redirect:/list";
+        return "AUTH_ERROR";
     }
 
     @PostMapping("new")
@@ -111,9 +119,9 @@ public class TimelineController {
             timeLineDao.save(timeline);
 
             activityService.log(user.getName() + " created list " + title, user);
-            return "redirect:/list?list";
+            return "CREATED";
         } else {
-            return "redirect:/list";
+            return "AUTH_ERROR";
         }
     }
 
@@ -122,13 +130,16 @@ public class TimelineController {
                                  Model model, HttpServletRequest request) {
         if (userAuthService.isUser(model, request)) {
             userAuthService.log(this.getClass(), request);
+
             Timeline timeline = timeLineDao.getById(timeLineId);
+
             if (userAuthService.isCurrentUser(request, timeline.getUser())
                     || userAuthService.isAdministrator(request)) {
                 timeLineDao.delete(timeline);
-                return "redirect:/list?deleted";
+
+                return "DELETED";
             }
         }
-        return "redirect:/list/" + timeLineId + "?notdeleted";
+        return "AUTH_ERROR";
     }
 }

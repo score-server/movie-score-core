@@ -11,8 +11,6 @@ import ch.moviescore.core.service.auth.ShaService;
 import ch.moviescore.core.service.auth.UserAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Random;
 
 /**
@@ -69,12 +65,12 @@ public class RegisterController {
                 user.setAuthKey(authkey);
                 userDao.save(user);
                 activityService.log(nameParam + " registered by " + adminUser.getName(), adminUser);
-                return "redirect:/register?added=" + authkey;
+                return "REGISTERED";
             } else {
-                return "redirect:/register?exists";
+                return "EXISTS";
             }
         } else {
-            return "redirect:/user";
+            return "AUTH_ERROR";
         }
     }
 
@@ -97,18 +93,19 @@ public class RegisterController {
                     String authkey = shaService.encode(String.valueOf(new Random().nextInt())).substring(1, 7);
                     user.setAuthKey(authkey);
                     user.setGroup(group);
-
                     userDao.save(user);
+
                     activityService.log(nameParam + " registered with groupkey " + groupKey, user);
 
                     LoginController.loginProcess(response, user, shaService, cookieService, sessionService, userDao, activityService);
 
-                    return "redirect:/";
+                    return "REGISTERED";
                 }
+                return "NO_GROUP";
             } else {
-                return "redirect:/register/" + groupKey + "?exists";
+                return "EXISTS";
             }
         }
-        return "redirect:/register/" + groupKey + "?password";
+        return "PASSWORDS_MATCH";
     }
 }

@@ -74,8 +74,8 @@ public class UserController {
     }
 
     @GetMapping(value = "{userId}")
-    public User getOneUser(@PathVariable("userId") Long userId, Model model, HttpServletRequest request) {
-        if (userAuthService.isUser(model, request)) {
+    public User getOneUser(@PathVariable("userId") Long userId, HttpServletRequest request) {
+        if (userAuthService.isUser(request)) {
             userAuthService.log(this.getClass(), request);
 
             return userDao.getById(userId);
@@ -83,6 +83,16 @@ public class UserController {
             return null;
         }
     }
+
+    @GetMapping("current")
+    public User getCurrentUser(HttpServletRequest request) {
+        if (userAuthService.isUser(request)) {
+            return userAuthService.getUser(request).getUser();
+        } else {
+            return null;
+        }
+    }
+
 
     @PostMapping(value = "{userId}/role/{role}")
     public String setRole(@PathVariable("userId") Long userId, @PathVariable("role") String role,
@@ -95,9 +105,9 @@ public class UserController {
             user.setRole(Integer.valueOf(role));
             userDao.save(user);
             activityService.log(currentUser.getName() + " changed role of " + user.getName() + " to " + role, user);
-            return "redirect:/user/" + userId + "?role";
+            return "CHANGED";
         } else {
-            return "redirect:/user/" + userId + "?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -111,9 +121,9 @@ public class UserController {
             user.setName(newName);
             userDao.save(user);
             activityService.log(oldName + " changed Username to " + newName, user);
-            return "redirect:/user/" + userId + "?username";
+            return "CHANGED";
         } else {
-            return "redirect:/user/" + userId + "?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -132,9 +142,9 @@ public class UserController {
                 sessionDao.deactivate(session);
             }
             activityService.log(user.getName() + " changed Password", user);
-            return "redirect:/user/" + userId + "?password";
+            return "CHANGED";
         } else {
-            return "redirect:/user/" + userId + "?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -150,16 +160,9 @@ public class UserController {
             user.setVideoPlayer(videoPlayer);
             userDao.save(user);
             activityService.log(user.getName() + " set Video Player to " + videoPlayer, user);
-            switch (videoPlayer) {
-                case "plyr":
-                    return "redirect:/user/" + userId + "?player=Plyr.io";
-                case "html5":
-                    return "redirect:/user/" + userId + "?player=HTML 5 Player";
-                default:
-                    return "redirect:/user/" + userId;
-            }
+            return "CHANGED";
         } else {
-            return "redirect:/user/" + userId + "?error";
+            return "AUTH_ERROR";
         }
     }
 
@@ -176,7 +179,8 @@ public class UserController {
                 user.setAuthKey(shaService.encode(String.valueOf(new Random().nextInt())).substring(1, 7));
             }
             userDao.save(user);
+            return "GENERATED";
         }
-        return "redirect:/user/" + userId;
+        return "AUTH_ERROR";
     }
 }

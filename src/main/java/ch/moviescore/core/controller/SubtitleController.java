@@ -53,16 +53,16 @@ public class SubtitleController {
                 if (multipartFile.getOriginalFilename().endsWith(".srt")) {
                     subtitleDao.addSubtitle(movieDao.getById(movieId), multipartFile, language,
                             userAuthService.getUser(request).getUser());
-                    return "redirect:/movie/" + movieId + "?subtitle";
+                    return "UPLOADED";
                 } else {
-                    return "redirect:/movie/" + movieId + "?wrongFile";
+                    return "FILE_ENDING";
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                return "redirect:/movie/" + movieId;
+                return "ERROR";
             }
         } else {
-            return "redirect:/movie/" + movieId;
+            return "AUTH_ERROR";
         }
     }
 

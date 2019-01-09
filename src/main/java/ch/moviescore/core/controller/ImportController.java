@@ -43,7 +43,7 @@ public class ImportController {
         User user = userAuthService.getUser(request).getUser();
         if (userAuthService.isAdministrator(model, request)) {
             if (settingsService.getKey("import").equals("1")) {
-                return "redirect:/settings";
+                return "IMPORT_RUNNING";
             }
             newMovieMovieImportService.importAll();
             activityService.log(user.getName() + " started Movie Import", user);
@@ -58,7 +58,7 @@ public class ImportController {
         User user = userAuthService.getUser(request).getUser();
         if (userAuthService.isAdministrator(model, request)) {
             if (settingsService.getKey("import").equals("1")) {
-                return "redirect:/settings";
+                return "IMPORT_RUNNING";
             }
             newMovieMovieImportService.updateAll();
             activityService.log(user.getName() + " started Movie Update", user);
@@ -73,7 +73,7 @@ public class ImportController {
         User user = userAuthService.getUser(request).getUser();
         if (userAuthService.isAdministrator(model, request)) {
             if (settingsService.getKey("import").equals("1")) {
-                return "redirect:/settings";
+                return "IMPORT_RUNNING";
             }
             newSeriesImportService.importAll();
             activityService.log(user.getName() + " started Series Import", user);
@@ -88,7 +88,7 @@ public class ImportController {
         User user = userAuthService.getUser(request).getUser();
         if (userAuthService.isAdministrator(model, request)) {
             if (settingsService.getKey("import").equals("1")) {
-                return "redirect:/settings";
+                return "IMPORT_RUNNING";
             }
             newSeriesImportService.updateAll();
             activityService.log(user.getName() + " started Series Update", user);

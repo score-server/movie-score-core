@@ -1,13 +1,13 @@
 package ch.moviescore.core.controller.reactive;
 
-import ch.moviescore.core.data.episode.EpisodeDao;
-import ch.moviescore.core.data.movie.MovieDao;
-import ch.moviescore.core.data.time.TimeDao;
-import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.data.episode.Episode;
+import ch.moviescore.core.data.episode.EpisodeDao;
 import ch.moviescore.core.data.movie.Movie;
+import ch.moviescore.core.data.movie.MovieDao;
 import ch.moviescore.core.data.time.Time;
+import ch.moviescore.core.data.time.TimeDao;
 import ch.moviescore.core.data.user.User;
+import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.service.auth.UserAuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,8 +61,10 @@ public class TimeController {
                 time.setTimestamp(getTimestamp());
                 timeDao.save(time);
             }
+            return "SAVED";
+        } else {
+            return "AUTH_ERROR";
         }
-        return "null";
     }
 
     @PostMapping("episode")
@@ -86,8 +88,10 @@ public class TimeController {
                 time.setTimestamp(getTimestamp());
                 timeDao.save(time);
             }
+            return "SAVED";
+        } else {
+            return "AUTH_ERROR";
         }
-        return "null";
     }
 
     @PostMapping("delete/{timeId}")
@@ -95,9 +99,10 @@ public class TimeController {
         Time time = timeDao.getById(timeId);
         if (time.getUser() == userAuthService.getUser(request).getUser()) {
             timeDao.delete(time);
-            return "redirect:/";
+            return "DELETED";
+        } else {
+            return "AUTH_ERROR";
         }
-        return "redirect:/?error";
     }
 
     private Timestamp getTimestamp() {

@@ -62,9 +62,9 @@ public class LoginController {
         try {
             userDto.exists(user);
             loginProcess(response, user, shaService, cookieService, sessionService, userDto, activityService);
-            return "LOGGEDIN";
+            return "LOGGED_IN";
         } catch (NullPointerException e) {
-            return "AUTH_ERROR - " + nameParam;
+            return "AUTH_ERROR";
         }
     }
 
@@ -76,13 +76,13 @@ public class LoginController {
                 sessionService.logout(cookieService.getSessionId(request));
                 userDto.save(user);
                 activityService.log(user.getName() + " logged out", user);
-                return "redirect:/login?logout";
+                return "LOGGED_OUT";
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                return "redirect:/";
+                return "ERROR";
             }
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
 
     }
@@ -95,13 +95,13 @@ public class LoginController {
                 Session session = sessionDao.getBySessionId(sessionId);
                 session.setActive(false);
                 sessionDao.save(session);
-                return "redirect:/user/" + user.getId();
+                return "LOGGED_OUT";
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                return "redirect:/";
+                return "ERROR";
             }
         } else {
-            return "redirect:/";
+            return "AUTH_ERROR";
         }
     }
 

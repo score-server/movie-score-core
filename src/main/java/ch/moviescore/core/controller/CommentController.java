@@ -52,7 +52,7 @@ public class CommentController {
             commentDao.createMovieComment(user, movie, commentParam);
 
             activityService.log(user.getName() + " created Comment on Movie " + movie.getTitle());
-            return "redirect:/movie/" + movieId;
+            return "CREATED";
         } else {
             return "AUTH_ERROR";
         }
@@ -69,7 +69,7 @@ public class CommentController {
             commentDao.createEpisodeComment(user, episode, commentParam);
 
             activityService.log(user.getName() + " created Comment on Episode " + episode.getFullTitle());
-            return "redirect:/episode/" + episodeId;
+            return "CREATED";
         } else {
             return "AUTH_ERROR";
         }

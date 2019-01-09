@@ -1,6 +1,5 @@
 package ch.moviescore.core.controller;
 
-import ch.moviescore.core.data.season.SeasonDao;
 import ch.moviescore.core.data.serie.Serie;
 import ch.moviescore.core.data.serie.SerieDao;
 import ch.moviescore.core.model.api.SerieListModel;
@@ -24,15 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 public class SeriesController {
 
     private SerieDao serieDao;
-    private SeasonDao seasonDao;
 
     private SearchService searchService;
     private UserAuthService userAuthService;
 
-    public SeriesController(SerieDao serieDao, SeasonDao seasonDao, SearchService searchService,
-                            UserAuthService userAuthService) {
+    public SeriesController(SerieDao serieDao, SearchService searchService, UserAuthService userAuthService) {
         this.serieDao = serieDao;
-        this.seasonDao = seasonDao;
         this.searchService = searchService;
         this.userAuthService = userAuthService;
     }
