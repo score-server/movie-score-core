@@ -105,16 +105,18 @@ public class LoginController {
         }
     }
 
-    static void loginProcess(HttpServletResponse response, User user, ShaService shaService, CookieService cookieService, SessionService sessionService, UserDao userDto, ActivityService activityService) {
-        loginProcess(response, user, shaService, cookieService, sessionService);
+    static String loginProcess(HttpServletResponse response, User user, ShaService shaService, CookieService cookieService, SessionService sessionService, UserDao userDto, ActivityService activityService) {
+        String sessionId = loginProcess(response, user, shaService, cookieService, sessionService);
         userDto.save(user);
         activityService.log(user.getName() + " logged in", user);
+        return sessionId;
     }
 
-    static void loginProcess(HttpServletResponse response, User user, ShaService shaService, CookieService cookieService, SessionService sessionService) {
+    static String loginProcess(HttpServletResponse response, User user, ShaService shaService, CookieService cookieService, SessionService sessionService) {
         String sessionId = shaService.encode(String.valueOf(new Random().nextInt()));
         cookieService.setUserCookie(response, sessionId);
         sessionService.addSession(user, sessionId);
         user.setLastLogin(new Timestamp(new Date().getTime()));
+        return sessionId;
     }
 }

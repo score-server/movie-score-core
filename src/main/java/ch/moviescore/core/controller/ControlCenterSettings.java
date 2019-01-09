@@ -88,7 +88,7 @@ public class ControlCenterSettings {
         }
     }
 
-    @PostMapping("clear")
+    @PostMapping("clearImport")
     private String clearImportLogs(HttpServletRequest request) {
         if (userAuthService.isAdministrator(request)) {
             importLogDao.delete();
