@@ -8,6 +8,7 @@ import ch.moviescore.core.model.api.EpisodeModel;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.EpisodeService;
 import ch.moviescore.core.service.auth.UserAuthService;
+import io.swagger.annotations.Api;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("episode")
+@Api(value = "/episode", description = "Handle episodes")
 public class EpisodeController {
 
     private EpisodeDao episodeDao;

@@ -9,6 +9,7 @@ import ch.moviescore.core.model.api.ControlCenterModel;
 import ch.moviescore.core.service.auth.UserAuthService;
 import ch.moviescore.core.service.filehandler.FileHandler;
 import ch.moviescore.core.service.filehandler.SettingsService;
+import io.swagger.annotations.Api;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("control")
+@Api(value = "/control", description = "Control Center for Admins")
 public class ControlCenterSettings {
 
     private ImportLogDao importLogDao;

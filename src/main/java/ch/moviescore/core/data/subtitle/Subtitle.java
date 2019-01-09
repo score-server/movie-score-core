@@ -34,9 +34,11 @@ public class Subtitle {
     @JsonIgnore
     private byte[] file;
 
+    @JsonIgnore
     @ManyToOne
     private Movie movie;
 
+    @JsonIgnore
     @ManyToOne
     private Episode episode;
 

@@ -8,6 +8,7 @@ import ch.moviescore.core.data.movie.MovieDao;
 import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.auth.UserAuthService;
+import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("comment")
+@Api(value = "/comment", description = "Handle Comments on movies and episodes")
 public class CommentController {
 
     private MovieDao movieDao;

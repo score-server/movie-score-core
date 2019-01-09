@@ -5,6 +5,8 @@ import ch.moviescore.core.data.blog.BlogDao;
 import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.service.ActivityService;
 import ch.moviescore.core.service.auth.UserAuthService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("blog")
+@Api(value = "/blog", description = "Handle Blog entries")
 public class BlogController {
 
     private BlogDao blogDao;
