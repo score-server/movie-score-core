@@ -1,4 +1,5 @@
 <h1>Movie Score Core</h1>
+New API for CineVue, currently running paralel to movie-score
 <pre>
 MIT License
 
