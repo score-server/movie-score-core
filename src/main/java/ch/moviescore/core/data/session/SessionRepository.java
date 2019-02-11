@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.session;
 
+
 import ch.moviescore.core.data.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

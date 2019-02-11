@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.season;
 
+
 import ch.moviescore.core.data.DaoInterface;
 import ch.moviescore.core.data.serie.Serie;
 import org.springframework.stereotype.Service;

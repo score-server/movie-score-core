@@ -1,5 +1,7 @@
 package ch.moviescore.core.data.session;
 
+
+
 import ch.moviescore.core.data.DaoInterface;
 import ch.moviescore.core.data.user.User;
 import org.springframework.stereotype.Service;

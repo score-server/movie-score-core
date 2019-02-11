@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.genre;
 
+
 import ch.moviescore.core.data.movie.Movie;
 import ch.moviescore.core.data.serie.Serie;
 import com.fasterxml.jackson.annotation.JsonIgnore;

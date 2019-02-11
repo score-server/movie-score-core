@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.listmovie;
 
+
 import ch.moviescore.core.data.movie.Movie;
 import ch.moviescore.core.data.timeline.Timeline;
 import lombok.Data;

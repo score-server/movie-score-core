@@ -1,10 +1,12 @@
 package ch.moviescore.core.data.time;
 
+
+
 import ch.moviescore.core.data.DaoInterface;
-import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.data.episode.Episode;
 import ch.moviescore.core.data.episode.EpisodeDao;
 import ch.moviescore.core.data.movie.Movie;
+import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.model.StartedVideo;
 import ch.moviescore.core.model.VideoModel;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,62 @@ public class TimeDao implements DaoInterface<Time> {
     public TimeDao(TimeRepository timeRepository, EpisodeDao episodeDao) {
         this.timeRepository = timeRepository;
         this.episodeDao = episodeDao;
+    }
+
+    @Override
+    public Time getById(Long id) {
+        return timeRepository.getOne(id);
+    }
+
+    @Override
+    public List<Time> getAll() {
+        return timeRepository.findAll();
+    }
+
+    @Override
+    public void save(Time time) {
+        timeRepository.save(time);
+    }
+
+    private VideoModel getMovieVideoModel(Movie movie) {
+        VideoModel videoModel = new VideoModel();
+        videoModel.setId(movie.getId());
+        videoModel.setTitle(movie.getTitle());
+        videoModel.setCaseImg(movie.getCaseImg());
+        videoModel.setVoteAverage(movie.getVoteAverage());
+        videoModel.setQuality(movie.getQuality());
+        videoModel.setYear(movie.getYear());
+        videoModel.setType("movie");
+        return videoModel;
+    }
+
+    private VideoModel getEpisodeVideoModel(Episode episode) {
+        VideoModel videoModel = new VideoModel();
+        videoModel.setId(episode.getId());
+        videoModel.setTitle(episode.getSeason().getSerie().getTitle() + " S" + episode.getSeason().getSeason()
+                + "E" + episode.getEpisode());
+        videoModel.setCaseImg(episode.getSeason().getSerie().getCaseImg());
+        videoModel.setVoteAverage(episode.getSeason().getSerie().getVoteAverage());
+        videoModel.setQuality(episode.getQuality());
+        videoModel.setYear(episode.getSeason().getYear());
+        videoModel.setType("episode");
+        return videoModel;
+    }
+
+    private float getProgress(Float time, Integer runtime) {
+        return ((time / 60) / runtime) * 100;
+    }
+
+    public Time getByUserAndMovie(User user, Movie movie) {
+        return timeRepository.findTimeByUserAndMovie(user, movie);
+    }
+
+    public Time getByUserAndEpisode(User user, Episode episode) {
+        return timeRepository.findTimeByUserAndEpisode(user, episode);
+    }
+
+    public void delete(Time time) {
+        timeRepository.delete(time);
     }
 
     public List<StartedVideo> getStartedMovies(User user) {
@@ -66,61 +124,5 @@ public class TimeDao implements DaoInterface<Time> {
         }
 
         return startedVideoList;
-    }
-
-    private VideoModel getMovieVideoModel(Movie movie) {
-        VideoModel videoModel = new VideoModel();
-        videoModel.setId(movie.getId());
-        videoModel.setTitle(movie.getTitle());
-        videoModel.setCaseImg(movie.getCaseImg());
-        videoModel.setVoteAverage(movie.getVoteAverage());
-        videoModel.setQuality(movie.getQuality());
-        videoModel.setYear(movie.getYear());
-        videoModel.setType("movie");
-        return videoModel;
-    }
-
-    private VideoModel getEpisodeVideoModel(Episode episode) {
-        VideoModel videoModel = new VideoModel();
-        videoModel.setId(episode.getId());
-        videoModel.setTitle(episode.getSeason().getSerie().getTitle() + " S" + episode.getSeason().getSeason()
-                + "E" + episode.getEpisode());
-        videoModel.setCaseImg(episode.getSeason().getSerie().getCaseImg());
-        videoModel.setVoteAverage(episode.getSeason().getSerie().getVoteAverage());
-        videoModel.setQuality(episode.getQuality());
-        videoModel.setYear(episode.getSeason().getYear());
-        videoModel.setType("episode");
-        return videoModel;
-    }
-
-    private float getProgress(Float time, Integer runtime) {
-        return ((time / 60) / runtime) * 100;
-    }
-
-    @Override
-    public Time getById(Long id) {
-        return timeRepository.getOne(id);
-    }
-
-    @Override
-    public List<Time> getAll() {
-        return timeRepository.findAll();
-    }
-
-    @Override
-    public void save(Time time) {
-        timeRepository.save(time);
-    }
-
-    public Time getByUserAndMovie(User user, Movie movie) {
-        return timeRepository.findTimeByUserAndMovie(user, movie);
-    }
-
-    public Time getByUserAndEpisode(User user, Episode episode) {
-        return timeRepository.findTimeByUserAndEpisode(user, episode);
-    }
-
-    public void delete(Time time) {
-        timeRepository.delete(time);
     }
 }

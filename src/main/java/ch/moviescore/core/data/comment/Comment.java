@@ -1,8 +1,11 @@
 package ch.moviescore.core.data.comment;
 
+
+
+
+import ch.moviescore.core.data.episode.Episode;
 import ch.moviescore.core.data.movie.Movie;
 import ch.moviescore.core.data.user.User;
-import ch.moviescore.core.data.episode.Episode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

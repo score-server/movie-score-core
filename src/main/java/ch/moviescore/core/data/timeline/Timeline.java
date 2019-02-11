@@ -1,7 +1,8 @@
 package ch.moviescore.core.data.timeline;
 
-import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.data.listmovie.ListMovie;
+import ch.moviescore.core.data.user.User;
+
 import lombok.Data;
 
 import javax.persistence.CascadeType;

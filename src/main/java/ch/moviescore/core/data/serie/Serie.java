@@ -2,6 +2,7 @@ package ch.moviescore.core.data.serie;
 
 import ch.moviescore.core.data.genre.Genre;
 import ch.moviescore.core.data.season.Season;
+
 import lombok.Data;
 
 import javax.persistence.CascadeType;

@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.importlog;
 
+
 import ch.moviescore.core.data.movie.Movie;
 import lombok.Data;
 

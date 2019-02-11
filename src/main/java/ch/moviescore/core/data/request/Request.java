@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.request;
 
+
 import ch.moviescore.core.data.user.User;
 import lombok.Data;
 

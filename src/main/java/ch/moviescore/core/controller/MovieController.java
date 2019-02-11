@@ -65,7 +65,7 @@ public class MovieController {
 
             MovieModel movieModel = new MovieModel();
             movieModel.setMovie(movie);
-            movieModel.setSimilarMovies(similarMovieService.getSimilarMovies(movie));
+//            movieModel.setSimilarMovies(similarMovieService.getSimilarMovies(movie));
             setTimeAndLikes(request, movie, user, movieModel);
 
             return movieModel;

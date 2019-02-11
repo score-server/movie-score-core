@@ -4,6 +4,7 @@ import ch.moviescore.core.data.activitylog.ActivityLogDao;
 import ch.moviescore.core.data.session.Session;
 import ch.moviescore.core.data.session.SessionDao;
 import ch.moviescore.core.data.timeline.TimeLineDao;
+import ch.moviescore.core.data.user.Role;
 import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.model.api.UserListModel;
@@ -102,7 +103,7 @@ public class UserController {
         if (userAuthService.isAdministrator(request)) {
             userAuthService.log(this.getClass(), request);
             User user = userDao.getById(userId);
-            user.setRole(Integer.valueOf(role));
+            user.setRole(Role.getRole(role));
             userDao.save(user);
             activityService.log(currentUser.getName() + " changed role of " + user.getName() + " to " + role, user);
             return "CHANGED";

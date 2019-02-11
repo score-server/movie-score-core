@@ -1,14 +1,17 @@
 package ch.moviescore.core.data.movie;
 
-import ch.moviescore.core.data.genre.Genre;
-import ch.moviescore.core.data.time.Time;
 import ch.moviescore.core.data.comment.Comment;
+import ch.moviescore.core.data.genre.Genre;
 import ch.moviescore.core.data.importlog.ImportLog;
 import ch.moviescore.core.data.likes.Likes;
 import ch.moviescore.core.data.listmovie.ListMovie;
 import ch.moviescore.core.data.subtitle.Subtitle;
+import ch.moviescore.core.data.time.Time;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,6 +29,9 @@ import java.util.List;
  * @project movie-db
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Movie {
 

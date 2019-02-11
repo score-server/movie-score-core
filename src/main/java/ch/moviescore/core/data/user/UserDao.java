@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.user;
 
+
 import ch.moviescore.core.data.DaoInterface;
 import ch.moviescore.core.data.session.SessionDao;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,21 @@ public class UserDao implements DaoInterface<User> {
         this.sessionDao = sessionDao;
     }
 
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findUserById(id);
+    }
+
     public User getBySessionId(String sessionId) {
         return sessionDao.getBySessionId(sessionId).getUser();
     }
@@ -29,13 +45,8 @@ public class UserDao implements DaoInterface<User> {
         return userRepository.findUserByName(name);
     }
 
-    @Override
-    public User getById(Long id) {
-        return userRepository.findUserById(id);
-    }
-
     public List<User> search(String search) {
-        return userRepository.findUsersByNameContainingOrderByRoleDescNameAsc(search);
+        return userRepository.findUsersByNameContainingOrderByRoleAscNameAsc(search);
     }
 
     public User login(String name, String password) {
@@ -44,16 +55,6 @@ public class UserDao implements DaoInterface<User> {
 
     public User getByIdAndPasswordSha(Long id, String passwordSha) {
         return userRepository.findUserByIdAndPasswordSha(id, passwordSha);
-    }
-
-    @Override
-    public void save(User user) {
-        userRepository.save(user);
-    }
-
-    @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
     }
 
     public boolean exists(User user) {

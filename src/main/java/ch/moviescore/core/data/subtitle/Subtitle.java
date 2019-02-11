@@ -1,5 +1,8 @@
 package ch.moviescore.core.data.subtitle;
 
+
+
+
 import ch.moviescore.core.data.episode.Episode;
 import ch.moviescore.core.data.movie.Movie;
 import ch.moviescore.core.data.user.User;
@@ -34,11 +37,9 @@ public class Subtitle {
     @JsonIgnore
     private byte[] file;
 
-    @JsonIgnore
     @ManyToOne
     private Movie movie;
 
-    @JsonIgnore
     @ManyToOne
     private Episode episode;
 

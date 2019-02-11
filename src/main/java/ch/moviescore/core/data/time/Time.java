@@ -1,8 +1,11 @@
 package ch.moviescore.core.data.time;
 
-import ch.moviescore.core.data.user.User;
+
+
+
 import ch.moviescore.core.data.episode.Episode;
 import ch.moviescore.core.data.movie.Movie;
+import ch.moviescore.core.data.user.User;
 import lombok.Data;
 
 import javax.persistence.Entity;

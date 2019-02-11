@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.updatelog;
 
+
 import ch.moviescore.core.data.DaoInterface;
 import org.springframework.stereotype.Service;
 

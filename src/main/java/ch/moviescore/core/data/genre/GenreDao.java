@@ -1,6 +1,7 @@
 package ch.moviescore.core.data.genre;
 
 import ch.moviescore.core.data.DaoInterface;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;

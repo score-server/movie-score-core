@@ -2,6 +2,7 @@ package ch.moviescore.core.controller;
 
 import ch.moviescore.core.data.groupinvite.GroupDao;
 import ch.moviescore.core.data.groupinvite.GroupInvite;
+import ch.moviescore.core.data.user.Role;
 import ch.moviescore.core.data.user.User;
 import ch.moviescore.core.data.user.UserDao;
 import ch.moviescore.core.service.ActivityService;
@@ -60,7 +61,7 @@ public class RegisterController {
                 User user = new User();
                 user.setName(nameParam);
                 user.setPasswordSha(shaService.encode(String.valueOf(new Random().nextInt())) + "-NOK");
-                user.setRole(1);
+                user.setRole(Role.USER);
                 String authkey = shaService.encode(String.valueOf(new Random().nextInt())).substring(1, 7);
                 user.setAuthKey(authkey);
                 userDao.save(user);
@@ -88,7 +89,7 @@ public class RegisterController {
                     User user = new User();
                     user.setName(nameParam);
                     user.setPasswordSha(shaService.encode(password));
-                    user.setRole(1);
+                    user.setRole(Role.USER);
                     user.setVideoPlayer(player);
                     String authkey = shaService.encode(String.valueOf(new Random().nextInt())).substring(1, 7);
                     user.setAuthKey(authkey);

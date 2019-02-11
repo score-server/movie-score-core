@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.groupinvite;
 
+
 import ch.moviescore.core.data.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

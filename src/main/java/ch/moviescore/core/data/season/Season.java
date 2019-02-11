@@ -1,5 +1,6 @@
 package ch.moviescore.core.data.season;
 
+
 import ch.moviescore.core.data.episode.Episode;
 import ch.moviescore.core.data.serie.Serie;
 import com.fasterxml.jackson.annotation.JsonIgnore;
